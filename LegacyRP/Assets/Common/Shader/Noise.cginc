@@ -1,5 +1,6 @@
 //Paraments
 float _NoiseScale;
+sampler2D _NoiseTex;
 
 //Stand PerlinNoise FBM Pattern
 fixed2 randVec(fixed2 value)
@@ -94,4 +95,32 @@ float patternTime(float2 uv, out float2 q, out float2 r)
                 fbmTime(uv + 4 * q + float2(8.3, 2.8)));
 
     return fbmTime(uv + 4 * r);
+}
+
+// A test for LUT based 3D (value) noise which is much faster than its hash based (purely procedural) counterpart. 
+// By IQ https://www.shadertoy.com/view/4sfGzS
+float noiseLUT(in float3 x)
+{
+	float3 p = floor(x);
+	float3 f = frac(x);
+	f = f * f * (3.0 - 2.0 * f);
+	float2 uv2 = (p.xy + float2(37.0, 17.0) * p.z) + f.xy;
+	float2 rg = tex2Dlod(_NoiseTex, float4((uv2 + 0.5) / 256.0, 0, 0)).yx;
+	return lerp(rg.x, rg.y, f.z);
+}
+
+float noiseBlurLUT(in float3 x)
+{
+    float3 i = floor(x);
+	float3 f = frac(x);
+	f = f * f * (3.0 - 2.0 * f);
+    float2 uv = i.xy + float2(37.0, 17.0) * i.z;
+    float2 rgA = tex2D(_NoiseTex, uv + float2(0, 0)).yx;
+    float2 rgB = tex2D(_NoiseTex, uv + float2(1, 0)).yx;
+    float2 rgC = tex2D(_NoiseTex, uv + float2(0, 1)).yx;
+    float2 rgD = tex2D(_NoiseTex, uv + float2(1, 1)).yx;
+    float2 rg  = lerp(  lerp(rgA, rgB, f.x),
+                        lerp(rgC, rgD, f.x),
+                        f.y);
+    return lerp(rg.x, rg.y, f.z);
 }
