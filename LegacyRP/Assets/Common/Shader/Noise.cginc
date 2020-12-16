@@ -37,7 +37,7 @@ float fbm(float2 uv)
     {
         f += a * perlinNoise(uv);
         uv *= 2;
-        a /= 2;
+        a *= 0.5;
     }
     return f;
 }
