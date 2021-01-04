@@ -42,6 +42,21 @@ namespace Astroite
                                                                             UV_TilingOffset_E,
                                                                             UV_TilingOffset_F,
         };
+
+        public static Vector4 GetUVTilingOffsetFromChar(char character)
+        {
+            int index = character;
+            if (index >= 48 && index <= 57)
+                return UV_TilingOffsets[index - 48];
+            else if (index >= 65 && index <= 70)
+                return UV_TilingOffsets[index - 55];
+            else if (index >= 97 && index <= 102)
+                return UV_TilingOffsets[index - 87];
+            else
+                return UV_TilingOffsets[15];
+        }
     }
+
+    
 }
 

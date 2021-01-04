@@ -8,27 +8,77 @@ namespace Astroite
     public class SetNumbers : MonoBehaviour
     {
         // Inspector
-        public int Number;
+        public string Message;
 
-        private List<int> m_numbers;
+        private const int MaxFigure = 5;
+        private Material m_material;
+
 
         private void OnEnable()
         {
-            splitInt2IntList(Number);
+            m_material = GetComponent<MeshRenderer>().sharedMaterial;
+            SetUVTilingOffset(Message);
         }
 
-        private List<int> splitInt2IntList(int number)
+        private void Update()
         {
-            List<int> numbers = new List<int>();
+            
+        }
 
-            while(number / 10 != 0)
+        private void SetUVTilingOffset(string message)
+        {
+            char[] chars = SplitStringToCharList(message);
+            Vector4[] messageArray = new Vector4[MaxFigure];
+            for (int i = 0; i < MaxFigure; i++)
             {
-                numbers.Add(number % 10);
-                number /= 10;
-                Debug.Log(number);
+                messageArray[i] = NumberConfig.GetUVTilingOffsetFromChar(chars[i]);
             }
 
-            return numbers;
+            m_material.SetVectorArray("numbers", messageArray);
         }
+
+        private char[] SplitStringToCharList(string message)
+        {
+            char[] chars = new char[MaxFigure];
+            char[] tmp = message.ToCharArray();
+            for (int i = 0; i < MaxFigure; i++)
+            {
+                if (i < tmp.Length)
+                    chars[i] = tmp[i];
+                else
+                    chars[i] = 'f';
+            }
+            return chars;
+        }
+
+
+
+
+        //private void SetUVTilingOffset(int number)
+        //{
+        //    List<int> numbers = SplitInt2IntList(number);
+        //    Vector4[] numberArray = new Vector4[numbers.Count];
+
+        //    for (int i = 0; i < numberArray.Length; i++)
+        //    {
+        //        numberArray[i] = NumberConfig.UV_TilingOffsets[numbers[i]];
+        //    }
+
+        //    if (m_material)
+        //        m_material.SetVectorArray("numbers", numberArray);
+        //}
+
+        //private List<int> SplitInt2IntList(int number)
+        //{
+        //    List<int> numbers = new List<int>();
+        //    while (number / 10 != 0)
+        //    {
+        //        numbers.Add(number % 10);
+        //        number /= 10;
+        //    }
+        //    numbers.Add(number % 10);
+        //    numbers.Reverse();
+        //    return numbers;
+        //}
     }
 }

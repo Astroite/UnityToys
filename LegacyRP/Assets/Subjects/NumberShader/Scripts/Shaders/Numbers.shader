@@ -42,23 +42,22 @@
             float4 showAreas[5];
 
             void SetParams()
-            {
+            {                
+                row = 20;
+                cloumn = 7;
 
-                float4 showArea0 = float4(2, 3, 2, 3);
-                float4 showArea1 = float4(1, 2, 2, 3);
-                float4 showArea2 = float4(3, 4, 2, 3);
-
-                float4 uv_TO_0 = float4(0.25, 0.25, 0, 0.25);
-                float4 uv_TO_1 = float4(0.25, 0.25, 0.25, 0);
-                float4 uv_TO_2 = float4(0.25, 0.25, 0.5, 0);
-
-                numbers[0] = uv_TO_0;
-                numbers[1] = uv_TO_1;
-                numbers[2] = uv_TO_2;
+                float4 shawAreaCent = floor(float4(row, row + 1, cloumn, cloumn + 1) * 0.5);
+                float4 showArea0 = shawAreaCent + float4(-2, -1, 0, 0);
+                float4 showArea1 = shawAreaCent + float4(-1, 0, 0, 0);
+                float4 showArea2 = shawAreaCent + float4(0, 1, 0, 0);
+                float4 showArea3 = shawAreaCent + float4(1, 2, 0, 0);
+                float4 showArea4 = shawAreaCent + float4(2, 3, 0, 0);
 
                 showAreas[0] = showArea0;
                 showAreas[1] = showArea1;
                 showAreas[2] = showArea2;
+                showAreas[3] = showArea3;
+                showAreas[4] = showArea4;
             }            
 
             float4 SampleNumber(float2 uv, float4 uv_TilingOffset, sampler2D _Tex)
@@ -69,12 +68,6 @@
             
             float4 SampleNumbers(float2 uv, float4 uv_TO, float4 showArea, sampler2D _Tex, out float flag)
             {
-                row = 15;
-                cloumn = 5;
-                
-                float4 number = float4(0.25, 0.25, -0.25, -0.5);
-                // float4 showArea = float4(2, 3, 3, 4);
-
                 float2 uvw = frac(uv * float2(row, cloumn));
                 fixed4 col = SampleNumber(uvw, uv_TO, _Tex);
 
@@ -87,7 +80,7 @@
             {
                 float flag = 0;
                 float4 color = float4(0,0,0,0);
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     float tempFlag = 0;
                     color += SampleNumbers(uv, numbers[i], showAreas[i], _Tex, tempFlag);
@@ -106,7 +99,8 @@
             }
 
             fixed4 frag (v2f i) : SV_Target
-            {
+            {                
+
                 SetParams();
                 fixed4 col = MainLoop(i.uv.xy, _MainTex);
 
